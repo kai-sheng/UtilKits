@@ -6,10 +6,8 @@
     <Company>Crab Lin</Company>
     <Description>Common method. This library has variable extension, also include Cache, Client, Crypto, Database and Serializer.
 Package completed by .Net Standard 2.0. Support .NET Core, .Net Framework 4.5</Description>
-    <PackageReleaseNotes>Move Crypto to Nuget Library
-Add Cache Set Function by dependency
-ApiClient Add Multipart Content</PackageReleaseNotes>
-    <Version>1.2.0</Version>
+    <PackageReleaseNotes>Fix ApiClient Response without Deserialize</PackageReleaseNotes>
+    <Version>1.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
