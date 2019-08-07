@@ -194,10 +194,10 @@ public class PaymentService : ApiClient
 ```
 可以在模組建構時，決定傳入的 Request 及 傳回的 Response 各是什麼格式
 
-|TYPE|JSON|XML|INI|Form Url Encord|Multipart|
-|---|---|---|---|---|---|---|
-| Request | ○ | ○ | ○ | ○ | ○ | 
-| Response | ○ | ○ | ○ | ✕ | ✕ | 
+|類型|JSON|XML|INI|Form Url Encord|Multipart|
+|---|---|---|---|---|---|
+|Request|○|○|○|○|○|
+|Response|○|○|○|✕|✕| 
 
 於程式建構時帶入，若未帶入預設皆為 JSON
 ``` C#
