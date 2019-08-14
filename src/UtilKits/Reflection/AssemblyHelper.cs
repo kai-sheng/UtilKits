@@ -15,7 +15,7 @@ namespace UtilKits.Reflection
         /// <returns></returns>
         public static Assembly GetAssembly(string assemblyName)
         {
-            return GetAssemblies(assemblyName, new string[] { }).Single();
+            return GetAssemblies(assemblyName, new string[] { }).First();
         }
 
         /// <summary>
