@@ -110,7 +110,7 @@ namespace UtilKits.Clients
         /// <typeparam name="TResponse">The Response Entity</typeparam>
         /// <param name="uri">Request Uri</param>
         /// <returns>The Response Entity</returns>
-        protected TResponse Get<TResponse>(Uri uri) where TResponse : class
+        public TResponse Get<TResponse>(Uri uri) where TResponse : class
         {
             return Send<TResponse>((client) => client.GetAsync(uri).Result);
         }
@@ -121,7 +121,7 @@ namespace UtilKits.Clients
         /// <typeparam name="TResponse">The Response Entity</typeparam>
         /// <param name="uri">Request Uri</param>
         /// <returns>The Response Entity</returns>
-        protected TResponse Post<TResponse>(Uri uri) where TResponse : class
+        public TResponse Post<TResponse>(Uri uri) where TResponse : class
         {
             var httpContent = new StringContent(string.Empty);
 
@@ -135,7 +135,7 @@ namespace UtilKits.Clients
         /// <param name="uri">Request Uri</param>
         /// <param name="content">POST的內容</param>
         /// <returns>The Response Entity</returns>
-        protected TResponse Post<TResponse>(Uri uri, string content) where TResponse : class
+        public TResponse Post<TResponse>(Uri uri, string content) where TResponse : class
         {
             var httpContent = new StringContent(content, Encoding.UTF8, MediaTypeHeaderValue.MediaType);
 
@@ -150,7 +150,7 @@ namespace UtilKits.Clients
         /// <param name="uri">The URI.</param>
         /// <param name="request">POST的object</param>
         /// <returns></returns>
-        protected TResponse Post<TRequest, TResponse>(Uri uri, TRequest request) where TResponse : class where TRequest : class
+        public TResponse Post<TRequest, TResponse>(Uri uri, TRequest request) where TResponse : class where TRequest : class
         {
             var httpContent = GetRequestContent(request);
             
@@ -165,7 +165,7 @@ namespace UtilKits.Clients
         /// <param name="uri">The URI.</param>
         /// <param name="request">POST的object</param>
         /// <returns></returns>
-        protected bool Post<TRequest>(Uri uri, TRequest request) where TRequest : class
+        public bool Post<TRequest>(Uri uri, TRequest request) where TRequest : class
         {
             var httpContent = GetRequestContent(request);
 
@@ -179,7 +179,7 @@ namespace UtilKits.Clients
         /// <param name="uri">Request Ur</param>
         /// <param name="httpContent">The HttpContent</param>
         /// <returns>The Response Entity</returns>
-        protected TResponse Post<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
+        public TResponse Post<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
         {
             return Send<TResponse>((client) => client.PostAsync(uri, httpContent).Result);
         }
@@ -189,7 +189,7 @@ namespace UtilKits.Clients
         /// </summary>
         /// <param name="uri">The RequestUri</param>
         /// <param name="httpContent">The HttpContent</param>
-        protected TResponse Put<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
+        public TResponse Put<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
         {
             return Send<TResponse>((client) => client.PutAsync(uri, httpContent).Result);
         }
@@ -202,7 +202,7 @@ namespace UtilKits.Clients
         /// <param name="uri">The URI.</param>
         /// <param name="request">PUT的object</param>
         /// <returns></returns>
-        protected TResponse Put<TRequest, TResponse>(Uri uri, TRequest request) where TResponse : class where TRequest : class
+        public TResponse Put<TRequest, TResponse>(Uri uri, TRequest request) where TResponse : class where TRequest : class
         {
             var httpContent = GetRequestContent(request);
             
@@ -217,7 +217,7 @@ namespace UtilKits.Clients
         /// <param name="uri">The URI.</param>
         /// <param name="request">PUT的object</param>
         /// <returns></returns>
-        protected bool Put<TRequest>(Uri uri, TRequest request) where TRequest : class
+        public bool Put<TRequest>(Uri uri, TRequest request) where TRequest : class
         {
             var httpContent = GetRequestContent(request);
 
@@ -228,7 +228,7 @@ namespace UtilKits.Clients
         /// 將 DELETE 要求傳送至指定的 URI
         /// </summary>
         /// <param name="uri">The RequestUri</param>
-        protected TResponse Delete<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
+        public TResponse Delete<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
         {
             return Send<TResponse>((client) => client.DeleteAsync(uri).Result);
         }
@@ -238,7 +238,7 @@ namespace UtilKits.Clients
         /// 不反序列化回傳內容
         /// </summary>
         /// <param name="uri">The RequestUri</param>
-        protected bool Delete(Uri uri, HttpContent httpContent)
+        public bool Delete(Uri uri, HttpContent httpContent)
         {
             return Send((client) => client.DeleteAsync(uri).Result);
         }

@@ -11,7 +11,7 @@ namespace UtilKits.Extensions
         /// 設定 MediaTypeHeaderValue
         /// </summary>
         /// <param name="client">The HttpClient</param>
-        internal static HttpClient SetMediaTypeHeaderValue(this HttpClient client, MediaTypeWithQualityHeaderValue headerValue)
+        public static HttpClient SetMediaTypeHeaderValue(this HttpClient client, MediaTypeWithQualityHeaderValue headerValue)
         {
             if (headerValue != null)
             {
@@ -25,7 +25,7 @@ namespace UtilKits.Extensions
         /// 設定 Http header
         /// </summary>
         /// <param name="client">The HttpClient</param>
-        internal static HttpClient SetHttpHeader(this HttpClient client, Dictionary<string, string> httpHeader)
+        public static HttpClient SetHttpHeader(this HttpClient client, Dictionary<string, string> httpHeader)
         {
             if (httpHeader != null && httpHeader.Any())
             {
