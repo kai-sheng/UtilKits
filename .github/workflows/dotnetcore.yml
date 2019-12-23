@@ -29,4 +29,4 @@ jobs:
       - name: Pack nuget Package
         run: dotnet pack ./src --configuration Release
       - name: Push package to nuget
-        run: dotnet nuget push **/*.nupkg --api-key ${{secrets.NUGET_DEPLOY_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
+        run: dotnet nuget push **/*.nupkg --api-key ${{secrets.NUGET_DEPLOY_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols true
