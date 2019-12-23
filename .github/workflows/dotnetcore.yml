@@ -13,6 +13,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+    - uses: ./src/
       with:
         dotnet-version: 2.2.108
     - name: Build with dotnet
