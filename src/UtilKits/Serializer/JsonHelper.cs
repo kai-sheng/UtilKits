@@ -23,7 +23,7 @@ namespace UtilKits.Serializer
         /// <summary>
         /// 序列化設定, 連同 private 變數一同序列化
         /// </summary>
-        protected static JsonSerializerSettings settings => _jsonSerialSetting.Value;
+        protected static JsonSerializerSettings Settings => _jsonSerialSetting.Value;
 
         /// <summary>
         /// 將物件轉換為Json字串
@@ -43,7 +43,7 @@ namespace UtilKits.Serializer
         /// <returns>Json 字串</returns>
         public string SerializeAllMembers<T>(T obj)
         {
-            string rtnString = JsonConvert.SerializeObject(obj, settings);
+            string rtnString = JsonConvert.SerializeObject(obj, Settings);
             return rtnString;
         }
 
@@ -67,7 +67,7 @@ namespace UtilKits.Serializer
         /// <returns>泛型物件</returns>
         public T DeserializeAllMembers<T>(string jsonString)
         {
-            T rtnValue = JsonConvert.DeserializeObject<T>(jsonString, settings);
+            T rtnValue = JsonConvert.DeserializeObject<T>(jsonString, Settings);
             return rtnValue;
         }
 
