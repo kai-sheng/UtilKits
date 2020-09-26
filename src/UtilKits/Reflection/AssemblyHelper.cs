@@ -36,23 +36,16 @@ namespace UtilKits.Reflection
         /// <returns></returns>
         public static IEnumerable<Assembly> GetAssemblies(string assemblyName, string[] excludedName)
         {
-            var assemblyNames = new List<string>();
-            var dependencies = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(lib => lib.FullName == assemblyName || lib.FullName.StartsWith(assemblyName));
+            var dependencies = DependencyContext.Default.RuntimeLibraries
+                                                .Where(lib =>
+                                                       lib.Name == assemblyName ||
+                                                       lib.Name.StartsWith(assemblyName, System.StringComparison.Ordinal));
 
             foreach (var library in dependencies)
             {
-                assemblyNames.Add(library.FullName);
-                assemblyNames.AddRange(library.GetReferencedAssemblies()
-                    .Where(lib => lib.FullName == assemblyName || lib.FullName.StartsWith(assemblyName))
-                    .Select(lib => lib.FullName));
-            }
+                if (excludedName.Any(e => string.Compare(e, library.Name, true) == 0)) continue;
 
-            foreach (var name in assemblyNames.Distinct())
-            {
-                if (excludedName.Any(e => string.Compare(e, name, true) == 0)) continue;
-
-                yield return Assembly.Load(new AssemblyName(name));
+                yield return Assembly.Load(new AssemblyName(library.Name));
             }
 
         }

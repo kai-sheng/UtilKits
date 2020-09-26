@@ -24,5 +24,18 @@ namespace UtilKits.Extensions
                 yield return pair.Key;
             }
         }
+
+        /// <summary>
+        /// 依 Key 取得 Value
+        /// </summary>
+        /// <param name="source">來源</param>
+        /// <param name="key">鍵值</param>
+        /// <typeparam name="TKey">鍵值泛型</typeparam>
+        /// <typeparam name="TValue">數值泛型</typeparam>
+        /// <returns></returns>
+        public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key)
+        {
+            return source.ContainsKey(key) ? source[key] : default(TValue);
+        }
     }
 }

@@ -88,7 +88,12 @@ namespace UtilKits.Serializer
 
         public T Deserialize<T>(string data)
         {
-            return Deserialize<T>(data);
+            if (typeof(T) == typeof(List<INIModel>))
+            {
+                return (T)(object)Deserialize(data);
+            }
+
+            throw new Exception("Must use List<INIModel>");
         }
     }
 

@@ -150,5 +150,45 @@ namespace UtilKits.Extensions
             dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
+
+        /// <summary>
+        /// 依字串格式及轉換為地區樣式的時間格式
+        /// </summary>
+        /// <param name="s">日期字串</param>
+        /// <param name="format">字串格式</param>
+        /// <param name="cultureString">地區樣式</param>
+        /// <returns></returns>
+        public static DateTime ToDateTime(this string s,
+            string format, string cultureString = "zh-TW")
+        {
+            try
+            {
+                var r = DateTime.ParseExact(
+                    s: s,
+                    format: format,
+                    provider: CultureInfo.GetCultureInfo(cultureString));
+                return r;
+            }
+            catch (FormatException)
+            {
+                throw;
+            }
+            catch (CultureNotFoundException)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取得下個整點小時的差距時間
+        /// </summary>
+        /// <returns></returns>
+        public static TimeSpan GetNextFullHour(this DateTime date)
+        {
+            var timeOfDay = date.TimeOfDay;
+            var nextFullHour = TimeSpan.FromHours(Math.Ceiling(timeOfDay.TotalHours));
+
+            return nextFullHour - timeOfDay;
+        }
     }
 }
