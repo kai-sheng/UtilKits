@@ -6,6 +6,14 @@ namespace UtilKits.Extensions
 {
     public static class LinqExtensions
     {
+        /// <summary>
+        /// 依條件取得唯一值
+        /// </summary>
+        /// <param name="source">來源</param>
+        /// <param name="keySelector">條件結果</param>
+        /// <typeparam name="TSource">來源泛型</typeparam>
+        /// <typeparam name="TKey">條件結果泛型</typeparam>
+        /// <returns></returns>
         public static IEnumerable<TSource> Distinct<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
             HashSet<TKey> seenKeys = new HashSet<TKey>();
@@ -19,11 +27,25 @@ namespace UtilKits.Extensions
             }
         }
 
+        /// <summary>
+        /// 取得最後
+        /// </summary>
+        /// <param name="source">來源</param>
+        /// <param name="takeSize">筆數</param>
+        /// <typeparam name="TSource">來源泛型</typeparam>
+        /// <returns></returns>
         public static IEnumerable<TSource> Last<TSource>(this IEnumerable<TSource> source, int takeSize)
         {
             return source.Skip(Math.Max(0, source.Count() - takeSize));
         }
 
+        /// <summary>
+        /// 依每頁大小產生分頁清單
+        /// </summary>
+        /// <param name="source">來源</param>
+        /// <param name="takeSize">每頁大小</param>
+        /// <typeparam name="TSource">來源泛型</typeparam>
+        /// <returns></returns>
         public static IEnumerable<IEnumerable<TSource>> TakePaging<TSource>(this IEnumerable<TSource> source, int takeSize)
         {
             int skipSize = 0;
@@ -40,6 +62,13 @@ namespace UtilKits.Extensions
             } while (pageSource.Count() > 0);
         }
 
+        /// <summary>
+        /// 混亂清單
+        /// </summary>
+        /// <param name="source">來源</param>
+        /// <param name="takeSize">取得個數(預設全部)</param>
+        /// <typeparam name="TSource">來源泛型</typeparam>
+        /// <returns></returns>
         public static IEnumerable<TSource> Shuffle<TSource>(this IEnumerable<TSource> source, int takeSize = 0)
         {
             var rand = new Random(Environment.TickCount);
