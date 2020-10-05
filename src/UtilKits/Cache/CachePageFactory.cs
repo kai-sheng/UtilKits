@@ -18,7 +18,7 @@ namespace UtilKits.Cache
 
         private string PageTotalKey => $"{SectionKey}_Total";
 
-        public T Get(Func<(int Total, T Data)> bindPagingCallback)
+        public(int Total, T Data) Get(Func < (int Total, T Data) > bindPagingCallback)
         {
             if (!HasData())
             {
@@ -31,9 +31,12 @@ namespace UtilKits.Cache
 
             }
 
+            var total = _totalCacheStorage.Get(PageTotalKey);
             var model = _cacheStorage.Get(StorageKey);
 
-            return (model == null) ? default(T) : model.Data;
+            var data = (model == null) ? default(T) : model.Data;
+
+            return (Total: total, Data: data);
         }
     }
 }
