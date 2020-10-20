@@ -7,7 +7,7 @@
     <Description>Common method. This library has variable extension, also include Cache, Client, Crypto, Database and Serializer.
 Package completed by .Net Standard 2.0. Support .NET Core, .Net Framework 4.5</Description>
     <PackageReleaseNotes>Fix ApiClient use Autofac Exception</PackageReleaseNotes>
-    <Version>1.2.5</Version>
+    <Version>1.2.6</Version>
   </PropertyGroup>
 
   <ItemGroup>

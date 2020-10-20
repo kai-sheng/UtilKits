@@ -37,6 +37,16 @@ namespace UtilKits.Serializer
         }
 
         /// <summary>
+        /// 將物件轉換為Json字串
+        /// </summary>
+        /// <param name="obj">要轉換的物件</param>
+        /// <returns>Json 字串</returns>
+        public string Serialize<T>(T obj, Formatting formatting)
+        {
+            return JsonConvert.SerializeObject(obj, formatting);
+        }
+
+        /// <summary>
         /// 將物件轉換為Json字串(連同 private 變數一同序列化)
         /// </summary>
         /// <param name="obj">要轉換的物件</param>
