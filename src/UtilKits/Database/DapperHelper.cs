@@ -206,6 +206,8 @@ namespace UtilKits.Database
                     if (collection.Count() > 0)
                         result.Add(p.ParameterName, new TableValueParameter(collection), p.DbType, p.Direction);
                 }
+                else if (p.SqlDbType == SqlDbType.Decimal)
+                    result.Add(p.ParameterName, p.Value, p.DbType, p.Direction, precision : p.Precision, scale : p.Scale);
                 else
                     result.Add(p.ParameterName, p.Value, p.DbType, p.Direction);
             }
