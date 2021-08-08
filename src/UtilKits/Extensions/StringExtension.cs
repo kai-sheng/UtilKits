@@ -102,6 +102,15 @@ namespace UtilKits.Extensions
         }
 
         /// <summary>
+        /// 是否為中文字串
+        /// </summary>
+        /// <param name="source">string extension</param>
+        /// <returns>True: 中文字串, False: 非中文字串</returns>
+        public static bool IsChineseWords(this string source)
+        {
+            return source.LengthWithChinese() != source.Length;
+        }
+        /// <summary>
         /// 是否為中文字元
         ///// / </summary>
         /// <param name="source">string extension</param>
@@ -112,25 +121,49 @@ namespace UtilKits.Extensions
         }
 
         /// <summary>
-        /// 是否為中文字串
-        ///// / </summary>
+        /// 取得字串長度(將中文字視為2 Btyes)
+        /// </summary>
         /// <param name="source">string extension</param>
-        /// <returns>True: 中文字串, False: 非中文字串</returns>
-        public static bool IsChineseWords(this string source)
+        /// <returns>字串長度</returns>
+        public static int LengthWithChinese(this string source)
         {
-            if (string.IsNullOrEmpty(source)) return false;
+            return Encoding.GetEncoding("big5").GetByteCount(source);
+        }
 
+        /// <summary>
+        /// 依輸入的長度，切割字串長度(字串包含中文字串)
+        /// </summary>
+        /// <param name="source">string extension</param>
+        /// <param name="length">字串長度</param>
+        /// <returns>切割後字串</returns>
+        public static string SubstringWithChinese(this string source, int length)
+        {
+            return SubstringWithChinese(source, length, "...");
+        }
+
+        /// <summary>
+        /// 依輸入的長度，切割字串長度(字串包含中文字串)
+        /// </summary>
+        /// <param name="source">string extension</param>
+        /// <param name="length">字串長度</param>
+        /// <returns>切割後字串</returns>
+        public static string SubstringWithChinese(this string source, int length, string suffix)
+        {
+            if (source.LengthWithChinese() <= length)
+                return source;
+
+            StringBuilder result = new StringBuilder();
+            int total = source.Length;
             char[] ch = source.ToCharArray();
 
-            for (int i = 0; i < ch.Length; i++)
+            for (int i = 0; i < total; i++)
             {
-                if (ch[i].IsChineseWords())
-                {
-                    return true;
-                }
+                length = length - Encoding.GetEncoding("big5").GetByteCount(ch[i].ToString());
+                if (length < 0) break;
+                result.Append(ch[i]);
             }
 
-            return false;
+            return (length < 0) ? result.ToString() : String.Concat(result.ToString(), suffix);
         }
 
         /// <summary>
