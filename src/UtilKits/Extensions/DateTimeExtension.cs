@@ -108,6 +108,16 @@ namespace UtilKits.Extensions
         }
 
         /// <summary>
+        /// 取得指定日期的當天最後一個時間
+        /// </summary>
+        /// <param name="date">System.DateTime</param>
+        /// <returns></returns>
+        public static DateTime LastMomentOfDay(this DateTime date)
+        {
+            return date.Date.AddDays(1).AddMilliseconds(-1);
+        }
+
+        /// <summary>
         /// 取得指定時間的小時整點或指定分鐘
         /// </summary>
         /// <param name="date">System.DateTime</param>
@@ -159,7 +169,7 @@ namespace UtilKits.Extensions
         /// <param name="format">字串格式</param>
         /// <param name="cultureString">地區樣式</param>
         /// <returns></returns>
-        public static DateTime ToDateTime(this string s,
+        public static DateTime? ToDateTime(this string s,
             string format, string cultureString = "zh-TW")
         {
             try
@@ -172,11 +182,11 @@ namespace UtilKits.Extensions
             }
             catch (FormatException)
             {
-                throw;
+                return null;
             }
             catch (CultureNotFoundException)
             {
-                throw;
+                return null;
             }
         }
 
@@ -190,6 +200,25 @@ namespace UtilKits.Extensions
             var nextFullHour = TimeSpan.FromHours(Math.Ceiling(timeOfDay.TotalHours));
 
             return nextFullHour - timeOfDay;
+        }
+
+        /// <summary>
+        /// 取得明天的差距時間
+        /// </summary>
+        /// <returns></returns>
+        public static TimeSpan GetNextDate(this DateTime date)
+        {
+            return date.Date.AddDays(1) - date;
+        }
+
+        /// <summary>
+        /// 轉換UTC Offset 差距時差
+        /// </summary>
+        /// <param name="time">時差</param>
+        /// <returns></returns>
+        public static string ParseSwitchOffset(this TimeSpan time)
+        {
+            return time.ToString((time > TimeSpan.Zero ? @"\+" : @"\-") + @"hh\:mm");
         }
     }
 }

@@ -13,9 +13,9 @@ namespace UtilKits.Extensions
         /// </summary>
         /// <param name="source">要轉換的物件</param>
         /// <returns>Json 字串</returns>
-        public static string ToJson<T>(this T source, Newtonsoft.Json.Formatting formatting = Newtonsoft.Json.Formatting.None) where T : class
+        public static string ToJson<T>(this T source) where T : class
         {
-            return JsonHelper.Instance.Serialize(source, formatting);
+            return JsonHelper.Instance.Serialize(source);
         }
 
         /// <summary>

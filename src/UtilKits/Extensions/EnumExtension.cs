@@ -116,5 +116,27 @@ namespace UtilKits.Extensions
 
             return Enum.GetValues(typeof(T)).Cast<Enum>().Where(m => value.HasFlag(m)).Cast<T>();
         }
+        /// <summary>
+        /// 依據 int:value 取得enum的值
+        /// </summary>
+        /// <typeparam name="T">Enum型別</typeparam>
+        /// <param name="value">int 值</param>
+        /// <returns></returns>
+        public static T GetEnumValue<T>(this int value) where T : Enum
+        {
+            if (!typeof(T).GetTypeInfo().IsEnum)
+                throw new ArgumentException("其值必須為列舉");
+            var result = Enum.GetValues(typeof(T)).Cast<T>().FirstOrDefault(o => o.ToInt() == value);
+            return result;
+        }
+        /// <summary>
+        /// 取得Enum清單
+        /// </summary>
+        /// <typeparam name="T">Enum型別</typeparam>
+        /// <returns></returns>
+        public static List<T> GetEnumList<T>() where T : Enum
+        {
+            return ((T[])Enum.GetValues(typeof(T))).ToList();
+        }
     }
 }
