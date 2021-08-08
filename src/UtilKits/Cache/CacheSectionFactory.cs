@@ -5,6 +5,8 @@ namespace UtilKits.Cache
 {
     public abstract class CacheSectionFactory<T> : CacheFactory<T>
     {
+        public override string host => "";
+        public override bool isUseMemoryStorage => false;
         protected string _sectionKey;
         protected ICacheStorage<List<string>> _sectionCacheStorage;
 

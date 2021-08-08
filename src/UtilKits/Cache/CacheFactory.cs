@@ -5,6 +5,8 @@ namespace UtilKits.Cache
 {
     public abstract class CacheFactory<T>
     {
+        public abstract string host { get; }
+        public abstract bool isUseMemoryStorage { get; }
         protected string _key;
         protected ICacheStorage<CacheModel<T>> _cacheStorage;
         protected TimeSpan? _expiration;
@@ -12,8 +14,14 @@ namespace UtilKits.Cache
         protected CacheFactory(string key)
         {
             _key = key;
-            _cacheStorage = new MemoryStorage<CacheModel<T>>();
-
+            if (isUseMemoryStorage)
+            {
+                _cacheStorage = new MemoryStorage<CacheModel<T>>();
+            }
+            else
+            {
+                _cacheStorage = new RedisStorage<CacheModel<T>>(host);
+            }
             // 若使用 reids 在此判斷連線狀態，轉換為MemoryCache
         }
 
