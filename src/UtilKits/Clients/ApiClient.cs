@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -16,7 +18,7 @@ namespace UtilKits.Clients
         /// </summary>
         /// <param name="requestFormat">序列化格式</param>
         public ApiClient(
-            SerializerRequestFormat requestFormat = SerializerRequestFormat.Json, 
+            SerializerRequestFormat requestFormat = SerializerRequestFormat.Json,
             SerializerResponseFormat responseFormat = SerializerResponseFormat.Json)
         {
             _requestFormat = requestFormat;
@@ -30,7 +32,6 @@ namespace UtilKits.Clients
             Timeout = TimeSpan.FromSeconds(100);
 
             HttpHeader = new Dictionary<string, string>();
-
         }
 
         /// <summary>
@@ -56,11 +57,15 @@ namespace UtilKits.Clients
             None
         }
 
+        public Uri uri { get; private set; }
         /// <summary>
         /// The Http ResponseBody
         /// </summary>
         public string ResponseBody { get; private set; }
-
+        /// <summary>
+        /// The Http RequestBody
+        /// </summary>
+        public string RequestBody { get; private set; }
         /// <summary>
         /// The Http Status Code
         /// </summary>
@@ -90,6 +95,7 @@ namespace UtilKits.Clients
         /// 格式化類型(Request)
         /// </summary>
         protected SerializerRequestFormat _requestFormat;
+
         /// <summary>
         /// 格式化類型(Response)
         /// </summary>
@@ -99,6 +105,7 @@ namespace UtilKits.Clients
         /// 實作序列化的物件(Request)
         /// </summary>
         protected ISerializer _requestSerializer;
+
         /// <summary>
         /// 實作序列化的物件(Response)
         /// </summary>
@@ -112,6 +119,8 @@ namespace UtilKits.Clients
         /// <returns>The Response Entity</returns>
         public TResponse Get<TResponse>(Uri uri) where TResponse : class
         {
+            this.RequestBody = string.Empty;
+            this.uri = uri;
             return Send<TResponse>((client) => client.GetAsync(uri).Result);
         }
 
@@ -124,7 +133,8 @@ namespace UtilKits.Clients
         public TResponse Post<TResponse>(Uri uri) where TResponse : class
         {
             var httpContent = new StringContent(string.Empty);
-
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
+            this.uri = uri;
             return Send<TResponse>((client) => client.PostAsync(uri, httpContent).Result);
         }
 
@@ -138,7 +148,8 @@ namespace UtilKits.Clients
         public TResponse Post<TResponse>(Uri uri, string content) where TResponse : class
         {
             var httpContent = new StringContent(content, Encoding.UTF8, MediaTypeHeaderValue.MediaType);
-
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
+            this.uri = uri;
             return Send<TResponse>((client) => client.PostAsync(uri, httpContent).Result);
         }
 
@@ -153,8 +164,11 @@ namespace UtilKits.Clients
         public TResponse Post<TRequest, TResponse>(Uri uri, TRequest request) where TResponse : class where TRequest : class
         {
             var httpContent = GetRequestContent(request);
-            
-            return Send<TResponse>((client) => client.PostAsync(uri, httpContent).Result);
+            this.uri = uri;
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
+            return Send<TResponse>((client) =>
+            client.PostAsync(uri, httpContent).Result
+            );
         }
 
         /// <summary>
@@ -168,7 +182,8 @@ namespace UtilKits.Clients
         public bool Post<TRequest>(Uri uri, TRequest request) where TRequest : class
         {
             var httpContent = GetRequestContent(request);
-
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
+            this.uri = uri;
             return Send((client) => client.PostAsync(uri, httpContent).Result);
         }
 
@@ -181,6 +196,8 @@ namespace UtilKits.Clients
         /// <returns>The Response Entity</returns>
         public TResponse Post<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
         {
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
+            this.uri = uri;
             return Send<TResponse>((client) => client.PostAsync(uri, httpContent).Result);
         }
 
@@ -191,6 +208,8 @@ namespace UtilKits.Clients
         /// <param name="httpContent">The HttpContent</param>
         public TResponse Put<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
         {
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
+            this.uri = uri;
             return Send<TResponse>((client) => client.PutAsync(uri, httpContent).Result);
         }
 
@@ -205,7 +224,8 @@ namespace UtilKits.Clients
         public TResponse Put<TRequest, TResponse>(Uri uri, TRequest request) where TResponse : class where TRequest : class
         {
             var httpContent = GetRequestContent(request);
-            
+            this.uri = uri;
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
             return Send<TResponse>((client) => client.PutAsync(uri, httpContent).Result);
         }
 
@@ -220,7 +240,8 @@ namespace UtilKits.Clients
         public bool Put<TRequest>(Uri uri, TRequest request) where TRequest : class
         {
             var httpContent = GetRequestContent(request);
-
+            this.uri = uri;
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
             return Send((client) => client.PutAsync(uri, httpContent).Result);
         }
 
@@ -228,8 +249,9 @@ namespace UtilKits.Clients
         /// 將 DELETE 要求傳送至指定的 URI
         /// </summary>
         /// <param name="uri">The RequestUri</param>
-        public TResponse Delete<TResponse>(Uri uri, HttpContent httpContent) where TResponse : class
+        public TResponse Delete<TRequest, TResponse>(Uri uri, TRequest httpContent) where TResponse : class where TRequest : class
         {
+            this.uri = uri;
             return Send<TResponse>((client) => client.DeleteAsync(uri).Result);
         }
 
@@ -240,6 +262,8 @@ namespace UtilKits.Clients
         /// <param name="uri">The RequestUri</param>
         public bool Delete(Uri uri, HttpContent httpContent)
         {
+            this.uri = uri;
+            this.RequestBody = httpContent.ReadAsStringAsync().Result;
             return Send((client) => client.DeleteAsync(uri).Result);
         }
 
@@ -251,14 +275,18 @@ namespace UtilKits.Clients
         /// <returns></returns>
         private HttpContent GetRequestContent<TRequest>(TRequest request) where TRequest : class
         {
+            var requestD = JsonConvert.SerializeObject(request, Formatting.Indented,
+            new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             switch (_requestFormat)
             {
                 case SerializerRequestFormat.FormUrlencode:
                     return (_requestSerializer as FormUrlencodeHelper).SerializeToFormUrlEncodedContent(request);
+
                 case SerializerRequestFormat.Multipart:
                     return (_requestSerializer as MultipartFormHelper).SerializeToMultipartFormDataContent(request);
+
                 default:
-                    return new StringContent(((object)request).ToJson(), Encoding.UTF8, MediaTypeHeaderValue.MediaType);
+                    return new StringContent(requestD, Encoding.UTF8, MediaTypeHeaderValue.MediaType);
             }
         }
 
@@ -294,7 +322,7 @@ namespace UtilKits.Clients
                 client.Timeout = Timeout;
                 client.SetHttpHeader(HttpHeader)
                     .SetMediaTypeHeaderValue(MediaTypeHeaderValue);
-                
+
                 var response = action(client);
 
                 ResponseBody = response.Content.ReadAsStringAsync().Result;
@@ -315,14 +343,19 @@ namespace UtilKits.Clients
             {
                 case SerializerRequestFormat.Json:
                     return JsonHelper.Instance;
+
                 case SerializerRequestFormat.Xml:
                     return XmlHelper.Instance;
+
                 case SerializerRequestFormat.Ini:
                     return INIHelper.Instance;
+
                 case SerializerRequestFormat.FormUrlencode:
                     return FormUrlencodeHelper.Instance;
+
                 case SerializerRequestFormat.Multipart:
                     return MultipartFormHelper.Instance;
+
                 default:
                     throw new NotImplementedException("Request Serializer Format Not Implemented.");
             }
@@ -339,12 +372,16 @@ namespace UtilKits.Clients
             {
                 case SerializerResponseFormat.Json:
                     return JsonHelper.Instance;
+
                 case SerializerResponseFormat.Xml:
                     return XmlHelper.Instance;
+
                 case SerializerResponseFormat.Ini:
                     return INIHelper.Instance;
+
                 case SerializerResponseFormat.None:
                     return null;
+
                 default:
                     throw new NotImplementedException("Response Serializer Format Not Implemented.");
             }
@@ -360,18 +397,23 @@ namespace UtilKits.Clients
             {
                 case SerializerRequestFormat.Json:
                     return new MediaTypeWithQualityHeaderValue("application/json");
+
                 case SerializerRequestFormat.Xml:
                     return new MediaTypeWithQualityHeaderValue("application/xml");
+
                 case SerializerRequestFormat.Ini:
                     return new MediaTypeWithQualityHeaderValue("text/plain");
+
                 case SerializerRequestFormat.FormUrlencode:
                     return new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded");
+
                 case SerializerRequestFormat.Multipart:
                     return new MediaTypeWithQualityHeaderValue("multipart/form-data");
+
                 default:
                     throw new NotImplementedException("Serializer Format Not Implemented.");
             }
         }
     }
-    
+
 }

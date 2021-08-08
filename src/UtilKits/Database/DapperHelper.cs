@@ -8,7 +8,10 @@ using Dapper;
 
 namespace UtilKits.Database
 {
-    public class DapperHelper
+    public class DapperHelper : DapperHelper<SqlConnection>
+    { }
+
+    public class DapperHelper<U> where U : IDbConnection, new()
     {
         public const int SQL_NO_TIMEOUT = 0;
         public const int SQL_TIMEOUT_SEC = 180;
@@ -37,7 +40,7 @@ namespace UtilKits.Database
         /// <param name="commandParameters"> An array of SqlParamters used to execute the command</param>
         /// <returns></returns>
         public static T Query<T>(string connectionString,
-            CommandType commandType, string commandText, int? timeout, params SqlParameter[] commandParameters)
+            CommandType commandType, string commandText, int? timeout = SQL_TIMEOUT_SEC, params SqlParameter[] commandParameters)
         {
             return Running(connectionString, commandType, commandText, commandParameters,
                 (conn, type, text, param) =>
@@ -70,7 +73,7 @@ namespace UtilKits.Database
         /// <param name="commandParameters"> An array of SqlParamters used to execute the command</param>
         /// <returns>IEnumerable<T></returns>
         public static IEnumerable<T> QueryCollection<T>(string connectionString,
-            CommandType commandType, string commandText, int? timeout, params SqlParameter[] commandParameters)
+            CommandType commandType, string commandText, int? timeout = SQL_TIMEOUT_SEC, params SqlParameter[] commandParameters)
         {
             return Running(connectionString, commandType, commandText, commandParameters,
                 (conn, type, text, param) =>
@@ -139,7 +142,7 @@ namespace UtilKits.Database
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns></returns>
         public static int Excute(string connectionString,
-            CommandType commandType, string commandText, int? timeout, params SqlParameter[] commandParameters)
+            CommandType commandType, string commandText, int? timeout = SQL_TIMEOUT_SEC, params SqlParameter[] commandParameters)
         {
             return Running(connectionString, commandType, commandText, commandParameters,
                 (conn, type, text, param) =>
@@ -163,17 +166,19 @@ namespace UtilKits.Database
         /// or
         /// commandText
         /// </exception>
-        private static T Running<T>(
+        protected static T Running<T>(
             string connectionString, CommandType commandType, string commandText, SqlParameter[] commandParameters,
-            Func<SqlConnection, CommandType, string, DynamicParameters, T> action)
+            Func<IDbConnection, CommandType, string, DynamicParameters, T> action)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new ArgumentNullException("connectionString");
             if (string.IsNullOrEmpty(commandText)) throw new ArgumentNullException("commandText");
 
             T result;
 
-            using (var conn = new SqlConnection(connectionString))
+            using (IDbConnection conn = new U())
             {
+                conn.ConnectionString = connectionString;
+
                 DynamicParameters parameters = ParseDynamic(commandParameters);
                 result = action(conn, commandType, commandText, parameters);
                 SetOutputParameterValue(commandParameters, parameters);
@@ -187,7 +192,7 @@ namespace UtilKits.Database
         /// </summary>
         /// <param name="commandParameters">SqlParameter</param>
         /// <returns>DynamicParameters</returns>
-        private static DynamicParameters ParseDynamic(SqlParameter[] commandParameters)
+        protected static DynamicParameters ParseDynamic(SqlParameter[] commandParameters)
         {
             if (commandParameters == null) return null;
 
@@ -207,7 +212,9 @@ namespace UtilKits.Database
                         result.Add(p.ParameterName, new TableValueParameter(collection), p.DbType, p.Direction);
                 }
                 else if (p.SqlDbType == SqlDbType.Decimal)
-                    result.Add(p.ParameterName, p.Value, p.DbType, p.Direction, precision : p.Precision, scale : p.Scale);
+                {
+                    result.Add(p.ParameterName, p.Value, p.DbType, p.Direction, precision: p.Precision, scale: p.Scale);
+                }
                 else
                     result.Add(p.ParameterName, p.Value, p.DbType, p.Direction);
             }
@@ -220,7 +227,7 @@ namespace UtilKits.Database
         /// </summary>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <param name="dynamicParameters">A bag of parameters that can be passed to the Dapper Query and Execute methods</param>
-        private static void SetOutputParameterValue(SqlParameter[] commandParameters, DynamicParameters dynamicParameters)
+        protected static void SetOutputParameterValue(SqlParameter[] commandParameters, DynamicParameters dynamicParameters)
         {
             if (commandParameters == null) return;
 
